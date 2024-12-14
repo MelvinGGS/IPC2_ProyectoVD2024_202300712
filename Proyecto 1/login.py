@@ -8,7 +8,11 @@ from solicitantes.solicitantes import ApplicantModule  # Import ApplicantModule
 def login():
     username = entry_username.get()
     password = entry_password.get()
+<<<<<<< Updated upstream
     if username == "admin" and password == "admin":
+=======
+    if username == "A" and password == "A":
+>>>>>>> Stashed changes
         root.destroy()
         admin_root = tk.Tk()
         AdminModule(admin_root)
