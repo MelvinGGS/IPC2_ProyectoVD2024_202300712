@@ -1,0 +1,23 @@
+digraph G {
+    rankdir=LR;
+    node[shape=record, height=.1]
+    nodo1[label="ART-223\nNombre: Miguel Hernández\nCorreo: miguel.hernández@example.com"];
+    nodo2[label="ART-422\nNombre: Juan Sánchez\nCorreo: juan.sánchez@mail.com"];
+    nodo3[label="ART-812\nNombre: Pablo Pérez\nCorreo: pablo.pérez@mail.com"];
+    nodo4[label="ART-799\nNombre: Ana Sánchez\nCorreo: ana.sánchez@mail.com"];
+    nodo5[label="ART-238\nNombre: Lucía Vargas\nCorreo: lucía.vargas@mail.com"];
+    nodo6[label="ART-593\nNombre: Juan Martínez\nCorreo: juan.martínez@example.com"];
+    nodo7[label="ART-864\nNombre: Miguel Sánchez\nCorreo: miguel.sánchez@artistmail.com"];
+    nodo8[label="ART-003\nNombre: Pablo Hernández\nCorreo: pablo.hernández@mail.com"];
+    nodo9[label="ART-096\nNombre: Elena Ramírez\nCorreo: elena.ramírez@mail.com"];
+    nodo10[label="ART-201\nNombre: Lucía Sánchez\nCorreo: lucía.sánchez@pixelworld.net"];
+    nodo1 -> nodo2;
+    nodo2 -> nodo3;
+    nodo3 -> nodo4;
+    nodo4 -> nodo5;
+    nodo5 -> nodo6;
+    nodo6 -> nodo7;
+    nodo7 -> nodo8;
+    nodo8 -> nodo9;
+    nodo9 -> nodo10;
+}
