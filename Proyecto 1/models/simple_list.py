@@ -1,11 +1,11 @@
 import os
 
-class Node:
-    def __init__(self, data):
-        self.valor = data
+class Nodo:
+    def __init__(self, datos):
+        self.valor = datos
         self.siguiente = None
 
-class SimpleList:
+class ListaSimple:
     def __init__(self):
         self.primero = None
         self.tamanio = 0
@@ -13,12 +13,12 @@ class SimpleList:
     def __len__(self):
         return self.tamanio
     
-    def append(self, data):
+    def agregar(self, datos):
         # Validar si ya existe
-        if self.search_by_id(data['id']):
+        if self.buscar_por_id(datos['id']):
             return False
             
-        nuevo = Node(data)
+        nuevo = Nodo(datos)
         if self.primero is None:
             self.primero = nuevo
         else:
@@ -29,7 +29,7 @@ class SimpleList:
         self.tamanio += 1
         return True
 
-    def search_by_id(self, id):
+    def buscar_por_id(self, id):
         actual = self.primero
         while actual:
             if actual.valor.get('id') == id:
@@ -37,9 +37,9 @@ class SimpleList:
             actual = actual.siguiente
         return False
 
-    def generate_graph(self):
+    def generar_grafo(self):
         # Crear el contenido del archivo DOT
-        dot_content = '''digraph G {
+        contenido_dot = '''digraph G {
     rankdir=LR;
     node[shape=record, height=.1]\n'''
         
@@ -47,8 +47,8 @@ class SimpleList:
         actual = self.primero
         contador = 1
         while actual:
-            node_content = f'{actual.valor["id"]}\\nNombre: {actual.valor["nombre"]}\\nCorreo: {actual.valor["correo"]}'
-            dot_content += f'    nodo{contador}[label="{node_content}"];\n'
+            contenido_nodo = f'{actual.valor["id"]}\\nNombre: {actual.valor["nombre"]}\\nCorreo: {actual.valor["correo"]}'
+            contenido_dot += f'    nodo{contador}[label="{contenido_nodo}"];\n'
             contador += 1
             actual = actual.siguiente
         
@@ -56,11 +56,11 @@ class SimpleList:
         actual = self.primero
         contador = 1
         while actual.siguiente:
-            dot_content += f'    nodo{contador} -> nodo{str(contador+1)};\n'
+            contenido_dot += f'    nodo{contador} -> nodo{str(contador+1)};\n'
             contador += 1
             actual = actual.siguiente
         
-        dot_content += '}'
+        contenido_dot += '}'
         
         # Crear directorios si no existen
         if not os.path.exists('./Reportes'):
@@ -69,12 +69,12 @@ class SimpleList:
             os.makedirs('./reportesdot')
             
         # Guardar archivo DOT
-        dot_path = './reportesdot/ListaArtistas.dot'
-        with open(dot_path, 'w') as f:
-            f.write(dot_content)
+        ruta_dot = './reportesdot/ListaArtistas.dot'
+        with open(ruta_dot, 'w') as f:
+            f.write(contenido_dot)
             
         # Generar imagen
-        img_path = './Reportes/ListaArtistas.svg'
-        os.system(f'dot -Tsvg {dot_path} -o {img_path}')
+        ruta_img = './Reportes/ListaArtistas.svg'
+        os.system(f'dot -Tsvg {ruta_dot} -o {ruta_img}')
         
-        return img_path
+        return ruta_img

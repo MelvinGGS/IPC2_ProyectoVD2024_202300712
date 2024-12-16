@@ -1,10 +1,10 @@
 import tkinter as tk
-from login import login
+from login import iniciar_sesion
 
-def main():
-    root = tk.Tk()
-    login()
-    root.mainloop()
+def principal():
+    ventana = tk.Tk()
+    iniciar_sesion()
+    ventana.mainloop() 
 
 if __name__ == "__main__":
-    main()
+    principal()
