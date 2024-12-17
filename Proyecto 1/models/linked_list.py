@@ -36,6 +36,7 @@ class ListaDoblementeEnlazada:
 
     def generar_grafo(self):
         codigo_dot = '''digraph G {
+    charset="utf-8"
     rankdir=LR;
     node[shape=record, height=.1]
 '''
@@ -67,13 +68,13 @@ class ListaDoblementeEnlazada:
         if not os.path.exists('./reportesdot'):
             os.makedirs('./reportesdot')
         
-        # Guardar archivo DOT
+        # Guardar archivo DOT con codificación utf-8
         dot_path = './reportesdot/ListaSolicitantes.dot'
-        with open(dot_path, 'w') as f:
+        with open(dot_path, 'w', encoding='utf-8') as f:
             f.write(codigo_dot)
         
-        # Generar imagen
+        # Generar imagen especificando la codificación
         img_path = './Reportes/ListaSolicitantes.svg'
-        os.system(f'dot -Tsvg {dot_path} -o {img_path}')
+        os.system(f'dot -Tsvg {dot_path} -o {img_path} -Gcharset=utf8')
         
         return img_path

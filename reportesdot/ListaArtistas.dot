@@ -1,16 +1,17 @@
 digraph G {
+    charset="utf-8"
     rankdir=LR;
     node[shape=record, height=.1]
-    nodo1[label="ART-223\nNombre: Miguel Hernández\nCorreo: miguel.hernández@example.com"];
-    nodo2[label="ART-422\nNombre: Juan Sánchez\nCorreo: juan.sánchez@mail.com"];
-    nodo3[label="ART-812\nNombre: Pablo Pérez\nCorreo: pablo.pérez@mail.com"];
-    nodo4[label="ART-799\nNombre: Ana Sánchez\nCorreo: ana.sánchez@mail.com"];
-    nodo5[label="ART-238\nNombre: Lucía Vargas\nCorreo: lucía.vargas@mail.com"];
-    nodo6[label="ART-593\nNombre: Juan Martínez\nCorreo: juan.martínez@example.com"];
-    nodo7[label="ART-864\nNombre: Miguel Sánchez\nCorreo: miguel.sánchez@artistmail.com"];
-    nodo8[label="ART-003\nNombre: Pablo Hernández\nCorreo: pablo.hernández@mail.com"];
-    nodo9[label="ART-096\nNombre: Elena Ramírez\nCorreo: elena.ramírez@mail.com"];
-    nodo10[label="ART-201\nNombre: Lucía Sánchez\nCorreo: lucía.sánchez@pixelworld.net"];
+    nodo1[label="ART-223\nNombre: Miguel HernÃ¡ndez\nCorreo: miguel.hernÃ¡ndez@example.com"];
+    nodo2[label="ART-422\nNombre: Juan SÃ¡nchez\nCorreo: juan.sÃ¡nchez@mail.com"];
+    nodo3[label="ART-812\nNombre: Pablo PÃ©rez\nCorreo: pablo.pÃ©rez@mail.com"];
+    nodo4[label="ART-799\nNombre: Ana SÃ¡nchez\nCorreo: ana.sÃ¡nchez@mail.com"];
+    nodo5[label="ART-238\nNombre: LucÃ­a Vargas\nCorreo: lucÃ­a.vargas@mail.com"];
+    nodo6[label="ART-593\nNombre: Juan MartÃ­nez\nCorreo: juan.martÃ­nez@example.com"];
+    nodo7[label="ART-864\nNombre: Miguel SÃ¡nchez\nCorreo: miguel.sÃ¡nchez@artistmail.com"];
+    nodo8[label="ART-003\nNombre: Pablo HernÃ¡ndez\nCorreo: pablo.hernÃ¡ndez@mail.com"];
+    nodo9[label="ART-096\nNombre: Elena RamÃ­rez\nCorreo: elena.ramÃ­rez@mail.com"];
+    nodo10[label="ART-201\nNombre: LucÃ­a SÃ¡nchez\nCorreo: lucÃ­a.sÃ¡nchez@pixelworld.net"];
     nodo1 -> nodo2;
     nodo2 -> nodo3;
     nodo3 -> nodo4;

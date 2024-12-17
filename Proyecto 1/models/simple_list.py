@@ -40,10 +40,11 @@ class ListaSimple:
     def generar_grafo(self):
         # Crear el contenido del archivo DOT
         contenido_dot = '''digraph G {
+    charset="utf-8"
     rankdir=LR;
     node[shape=record, height=.1]\n'''
         
-        # Generar nodos
+        # Generar nodos con codificación utf-8
         actual = self.primero
         contador = 1
         while actual:
@@ -68,13 +69,13 @@ class ListaSimple:
         if not os.path.exists('./reportesdot'):
             os.makedirs('./reportesdot')
             
-        # Guardar archivo DOT
+        # Guardar archivo DOT con codificación utf-8
         ruta_dot = './reportesdot/ListaArtistas.dot'
-        with open(ruta_dot, 'w') as f:
+        with open(ruta_dot, 'w', encoding='utf-8') as f:
             f.write(contenido_dot)
             
-        # Generar imagen
+        # Generar imagen especificando la codificación
         ruta_img = './Reportes/ListaArtistas.svg'
-        os.system(f'dot -Tsvg {ruta_dot} -o {ruta_img}')
+        os.system(f'dot -Tsvg {ruta_dot} -o {ruta_img} -Gcharset=utf8')
         
         return ruta_img

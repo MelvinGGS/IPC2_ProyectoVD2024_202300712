@@ -1,15 +1,16 @@
 digraph G {
+    charset="utf-8"
     rankdir=LR;
     node[shape=record, height=.1]
     nodo1[label="{<f1>|IPC-001\nNombre: Carlos Ruiz\nCorreo: carlos.ruiz@example.com|<f2>}"];
     nodo2[label="{<f1>|IPC-002\nNombre: Carlos Ruiz\nCorreo: carlos.ruiz@mail.com|<f2>}"];
-    nodo3[label="{<f1>|IPC-003\nNombre: María López\nCorreo: maría.lópez@mail.com|<f2>}"];
-    nodo4[label="{<f1>|IPC-004\nNombre: Camila Sánchez\nCorreo: camila.sánchez@example.com|<f2>}"];
-    nodo5[label="{<f1>|IPC-005\nNombre: Camila Sánchez\nCorreo: camila.sánchez@example.com|<f2>}"];
+    nodo3[label="{<f1>|IPC-003\nNombre: MarÃ­a LÃ³pez\nCorreo: marÃ­a.lÃ³pez@mail.com|<f2>}"];
+    nodo4[label="{<f1>|IPC-004\nNombre: Camila SÃ¡nchez\nCorreo: camila.sÃ¡nchez@example.com|<f2>}"];
+    nodo5[label="{<f1>|IPC-005\nNombre: Camila SÃ¡nchez\nCorreo: camila.sÃ¡nchez@example.com|<f2>}"];
     nodo6[label="{<f1>|IPC-006\nNombre: Diego Torres\nCorreo: diego.torres@example.com|<f2>}"];
     nodo7[label="{<f1>|IPC-007\nNombre: Carlos Ruiz\nCorreo: carlos.ruiz@example.com|<f2>}"];
     nodo8[label="{<f1>|IPC-008\nNombre: Diego Torres\nCorreo: diego.torres@correo.com|<f2>}"];
-    nodo9[label="{<f1>|IPC-009\nNombre: Luis Hernández\nCorreo: luis.hernández@correo.com|<f2>}"];
+    nodo9[label="{<f1>|IPC-009\nNombre: Luis HernÃ¡ndez\nCorreo: luis.hernÃ¡ndez@correo.com|<f2>}"];
     nodo10[label="{<f1>|IPC-010\nNombre: Diego Torres\nCorreo: diego.torres@example.com|<f2>}"];
     nodo1:f2 -> nodo2:f1;
     nodo2:f1 -> nodo1:f2;

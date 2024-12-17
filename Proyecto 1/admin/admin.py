@@ -79,7 +79,7 @@ class ModuloAdmin:
             # Validar formato ID
             if not id.startswith('IPC-'):
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'IPC-'")
-            
+
             # Validar ID único
             if self.solicitantes.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
@@ -107,7 +107,7 @@ class ModuloAdmin:
             # Validar formato ID
             if not id.startswith('ART-'):
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'ART-'")
-            
+
             # Validar ID único
             if self.artistas.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
@@ -149,9 +149,11 @@ class ModuloAdmin:
             messagebox.showerror("Error", f"Error al generar el grafo: {str(e)}")
 
     def cerrar_sesion(self):
-        # ...existing code...
+        ventana_login = tk.Tk()
+        from login import LoginWindow
+        app = LoginWindow(ventana_login, self.artistas, self.solicitantes)  # Pasamos las listas como parámetros
         self.root.destroy()
-        # main function is not defined, so we remove the call
+        ventana_login.mainloop()
 
     def mostrar_imagen_svg(self, image_path):
         try:

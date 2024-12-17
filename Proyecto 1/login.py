@@ -4,51 +4,84 @@ from tkinter import messagebox
 from admin.admin import ModuloAdmin  # Import ModuloAdmin
 from artistas.artistas import ModuloArtista  # Import ModuloArtista
 from solicitantes.solicitantes import ModuloSolicitantes  # Import ModuloSolicitantes
+from models.linked_list import ListaDoblementeEnlazada
+from models.simple_list import ListaSimple
 
-def iniciar_sesion():
-    usuario = entrada_usuario.get()
-    contrasena = entrada_contrasena.get()
-    if usuario == "A" and contrasena == "A":
-        root.destroy()
-        ventana_admin = tk.Tk()
-        ModuloAdmin(ventana_admin)
-        ventana_admin.mainloop()
-    elif usuario == "artista" and contrasena == "artista":
-        root.destroy()
-        ventana_artista = tk.Tk()
-        ModuloArtista(ventana_artista)
-        ventana_artista.mainloop()
-    elif usuario == "soli" and contrasena == "soli":
-        root.destroy()
-        ventana_solicitante = tk.Tk()
-        ModuloSolicitantes(ventana_solicitante)
-        ventana_solicitante.mainloop()
-    else:
-        messagebox.showerror("Error de inicio de sesión", "Datos incorrectos")
+class LoginWindow:
+    def __init__(self, root, lista_artistas=None, lista_solicitantes=None):
+        self.root = root
+        self.root.title("Inicio de Sesión - IPCArt-Studio")
+        self.root.geometry("800x600")
+        
+        # Usar las listas existentes o crear nuevas si no se proporcionan
+        self.lista_artistas = lista_artistas if lista_artistas is not None else ListaSimple()
+        self.lista_solicitantes = lista_solicitantes if lista_solicitantes is not None else ListaDoblementeEnlazada()
+        
+        self.crear_widgets()
+    
+    def crear_widgets(self):
+        tk.Label(self.root, text="Nombre de usuario", font=("Helvetica", 30)).pack(pady=20)
+        self.entrada_usuario = tk.Entry(self.root, width=90, font=("Helvetica", 10))
+        self.entrada_usuario.pack(ipady=10, pady=10)
+        
+        tk.Label(self.root, text="Contraseña", font=("Helvetica", 30)).pack(pady=20)
+        self.entrada_contrasena = tk.Entry(self.root, show="*", width=90, font=("Helvetica", 10))
+        self.entrada_contrasena.pack(ipady=10, pady=10)
+        
+        tk.Button(self.root, text="INGRESAR", command=self.iniciar_sesion, 
+                 font=("Helvetica", 20), width=20, height=2).pack(pady=20)
 
-root = tk.Tk()
-root.title("Inicio de Sesión - IPCArt-Studio")
-root.geometry("800x600")
+    def validar_usuario(self, usuario, contrasena):
+        if usuario == "AdminIPC" and contrasena == "ARTIPC2":
+            return "admin"
+        
+        actual = self.lista_artistas.primero
+        while actual:
+            if actual.valor['id'] == usuario and actual.valor['pwd'] == contrasena:
+                return "artista"
+            actual = actual.siguiente
+        
+        actual = self.lista_solicitantes.primero
+        while actual:
+            if actual.valor['id'] == usuario and actual.valor['pwd'] == contrasena:
+                return "solicitante"
+            actual = actual.siguiente
+        
+        return None
 
-tk.Label(root, text="Nombre de usuario", font=("Helvetica", 30)).pack(pady=20)  # Increase font size and add padding
-entrada_usuario = tk.Entry(root, width=90, font=("Helvetica", 10))  # Increase font size
-entrada_usuario.pack(ipady=10, pady=10)  # Increase height and add padding
-
-tk.Label(root, text="Contraseña", font=("Helvetica", 30)).pack(pady=20)  # Increase font size and add padding
-entrada_contrasena = tk.Entry(root, show="*", width=90, font=("Helvetica", 10))  # Increase font size
-entrada_contrasena.pack(ipady=10, pady=10)  # Increase height and add padding
-
-tk.Button(root, text="INGRESAR", command=iniciar_sesion, font=("Helvetica", 20), width=20, height=2).pack(pady=20)  # Increase size and add padding
-
-root.mainloop()
+    def iniciar_sesion(self):
+        usuario = self.entrada_usuario.get()
+        contrasena = self.entrada_contrasena.get()
+        
+        tipo_usuario = self.validar_usuario(usuario, contrasena)
+        
+        if tipo_usuario == "admin":
+            self.root.destroy()
+            ventana_admin = tk.Tk()
+            admin = ModuloAdmin(ventana_admin)
+            self.lista_artistas = admin.artistas
+            self.lista_solicitantes = admin.solicitantes
+            ventana_admin.mainloop()
+        elif tipo_usuario == "artista":
+            self.root.destroy()
+            ventana_artista = tk.Tk()
+            ModuloArtista(ventana_artista, self.lista_artistas, self.lista_solicitantes)
+            ventana_artista.mainloop()
+        elif tipo_usuario == "solicitante":
+            self.root.destroy()
+            ventana_solicitante = tk.Tk()
+            ModuloSolicitantes(ventana_solicitante, self.lista_artistas, self.lista_solicitantes)
+            ventana_solicitante.mainloop()
+        else:
+            messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
 # main.py
 import tkinter as tk
-from login import iniciar_sesion
+from login import LoginWindow
 
 def main():
     root = tk.Tk()
-    iniciar_sesion()
+    app = LoginWindow(root)
     root.mainloop()
 
 if __name__ == "__main__":
