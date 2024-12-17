@@ -65,12 +65,14 @@ class LoginWindow:
         elif tipo_usuario == "artista":
             self.root.destroy()
             ventana_artista = tk.Tk()
-            ModuloArtista(ventana_artista, self.lista_artistas, self.lista_solicitantes)
+            modulo = ModuloArtista(ventana_artista, self.lista_artistas, self.lista_solicitantes)
+            modulo.id_artista = usuario  # Aquí se establece el ID del artista
             ventana_artista.mainloop()
         elif tipo_usuario == "solicitante":
             self.root.destroy()
             ventana_solicitante = tk.Tk()
-            ModuloSolicitantes(ventana_solicitante, self.lista_artistas, self.lista_solicitantes)
+            modulo = ModuloSolicitantes(ventana_solicitante, self.lista_artistas, self.lista_solicitantes)
+            modulo.id_solicitante = usuario  # Store the user ID
             ventana_solicitante.mainloop()
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")

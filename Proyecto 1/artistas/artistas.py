@@ -1,15 +1,22 @@
 # artist_module.py
 import tkinter as tk
 from tkinter import messagebox
+from models.cola import Cola  # Changed import
+from models.stack import PilaFiguras
+from models.matriz_dispersa import MatrizDispersa
+from PIL import Image, ImageTk
+from models.lista_circular import ListaCircular
 
 class ModuloArtista:
     def __init__(self, root, lista_artistas=None, lista_solicitantes=None):
         self.root = root
         self.root.title("ARTISTAS")
         root.geometry("1400x725")
-        # Guardar referencia a las listas
         self.lista_artistas = lista_artistas
         self.lista_solicitantes = lista_solicitantes
+        self.id_artista = None
+        self.etiqueta_imagen = None
+        self.lista_imagenes = ListaCircular()
         self.crear_widgets()
 
     def crear_widgets(self):
@@ -24,19 +31,155 @@ class ModuloArtista:
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
         tk.Button(marco_botones, text="Ver cola", command=self.ver_perfil,
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
-        tk.Button(marco_botones, text="Imágenes solicitadas", command=self.modificar_perfil,
+        tk.Button(marco_botones, text="Imágenes procesadas", command=self.modificar_perfil,
                  font=("Helvetica", 12), width=20, height=2).pack(side=tk.LEFT, padx=10)
         tk.Button(marco_botones, text="Cerrar Sesión", command=self.cerrar_sesion,
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
 
+        # Marco para mostrar imágenes
+        self.marco_imagen = tk.Frame(self.root)
+        self.marco_imagen.pack(pady=2, fill=tk.BOTH, expand=True)
+        
+        # Barra de desplazamiento horizontal
+        barra_h = tk.Scrollbar(self.marco_imagen, orient=tk.HORIZONTAL)
+        barra_h.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self.canvas = tk.Canvas(self.marco_imagen, height=645, xscrollcommand=barra_h.set)
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+        
+        barra_h.config(command=self.canvas.xview)
+        
+        self.etiqueta_imagen = tk.Label(self.canvas)
+        self.canvas.create_window((0, 0), window=self.etiqueta_imagen, anchor='nw')
+
     def ver_solicitudes(self):
-        messagebox.showinfo("Info", "Aceptar solicitudes")
+        if not self.id_artista:  # Verifica si el ID está establecido
+            messagebox.showerror("Error", "ID de artista no establecido")
+            return
+            
+        # Buscar el artista actual
+        artista = None
+        actual = self.lista_artistas.primero
+        while actual:
+            if actual.valor['id'] == self.id_artista:
+                artista = actual.valor
+                break
+            actual = actual.siguiente
+            
+        if not artista:
+            messagebox.showerror("Error", "Artista no encontrado")
+            return
+            
+        # Cambiar la verificación de cola
+        if 'cola_solicitudes' not in artista:
+            artista['cola_solicitudes'] = Cola()
+        
+        if artista['cola_solicitudes'].esta_vacia():
+            messagebox.showinfo("Info", "No hay solicitudes pendientes")
+            return
+            
+        # Obtener la primera solicitud
+        figura, solicitante_id = artista['cola_solicitudes'].desencolar()
+        
+        # Crear matriz dispersa
+        matriz = MatrizDispersa()
+        for pixel in figura['pixels']:
+            matriz.insertar(pixel['fila'], pixel['col'], pixel['color'])
+            
+        # Generar imagen de la matriz
+        ruta_imagen = matriz.graficar(figura['id'])
+        
+        # Guardar en lista circular del artista
+        self.lista_imagenes.insertar({
+            'id_figura': figura['id'],
+            'nombre': figura['nombre'],
+            'solicitante': solicitante_id,
+            'ruta_imagen': ruta_imagen
+        })
+        
+        # Guardar en lista doble circular del solicitante
+        solicitante = None
+        actual = self.lista_solicitantes.primero
+        while actual:
+            if actual.valor['id'] == solicitante_id:
+                solicitante = actual.valor
+                break
+            actual = actual.siguiente
+            
+        if solicitante:
+            if 'imagenes' not in solicitante:
+                solicitante['imagenes'] = []
+            solicitante['imagenes'].append({
+                'id_figura': figura['id'],
+                'nombre': figura['nombre'],
+                'artista': self.id_artista,
+                'ruta_imagen': ruta_imagen
+            })
+            
+        messagebox.showinfo("Éxito", "Solicitud procesada correctamente")
+        self.mostrar_imagen_svg(ruta_imagen)
 
     def ver_perfil(self):
-        messagebox.showinfo("Info", "Ver cola de solicitudes")
+        if not self.id_artista:
+            messagebox.showerror("Error", "ID de artista no establecido")
+            return
+            
+        actual = self.lista_artistas.primero
+        while actual:
+            if actual.valor['id'] == self.id_artista:
+                if 'cola_solicitudes' in actual.valor:  # Cambiar aquí también
+                    ruta_imagen = actual.valor['cola_solicitudes'].generar_grafo()
+                    if ruta_imagen:
+                        self.mostrar_imagen_svg(ruta_imagen)
+                    return
+            actual = actual.siguiente
+            
+        messagebox.showinfo("Info", "No hay solicitudes en cola")
+
+    def mostrar_imagen_svg(self, image_path):
+        try:
+            from cairosvg import svg2png
+            png_path = image_path.replace('.svg', '.png')
+            svg2png(url=image_path, write_to=png_path)
+            
+            # Load image
+            image = Image.open(png_path)
+            
+            # Usar casi toda la altura disponible de la ventana
+            max_height = 450
+            
+            # Calculate new dimensions maintaining aspect ratio
+            aspect_ratio = image.width / image.height
+            new_height = max_height
+            new_width = int(new_height * aspect_ratio)
+            
+            # Resize image
+            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(image)
+            
+            # Update image label
+            self.etiqueta_imagen.configure(image=photo)
+            self.etiqueta_imagen.image = photo
+            
+            # Update canvas scrollregion
+            self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}")
 
     def modificar_perfil(self):
-        messagebox.showinfo("Info", "Ver imágenes solicitadas")
+        if not self.id_artista:
+            messagebox.showerror("Error", "ID de artista no establecido")
+            return
+            
+        try:
+            ruta_imagen = self.lista_imagenes.generar_grafo(self.id_artista)
+            if ruta_imagen:
+                self.mostrar_imagen_svg(ruta_imagen)
+            else:
+                messagebox.showinfo("Info", "No hay imágenes procesadas")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al generar visualización: {str(e)}")
 
     def cerrar_sesion(self):
         ventana_login = tk.Tk()

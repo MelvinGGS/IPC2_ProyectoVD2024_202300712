@@ -1,0 +1,10 @@
+digraph G {
+    rankdir=LR;
+    node[shape=record];
+    nodo0[label="ID: 3\nNombre: Rana\nArtista: ART-223"];
+    nodo0 -> nodo1;
+    nodo1 -> nodo0;
+    nodo1[label="ID: 2\nNombre: Capibara\nArtista: ART-223"];
+    nodo1 -> nodo0;
+    nodo0 -> nodo1;
+}
