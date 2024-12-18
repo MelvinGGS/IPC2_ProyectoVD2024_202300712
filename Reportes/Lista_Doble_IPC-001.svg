@@ -15,9 +15,9 @@
 <polygon fill="none" stroke="black" points="0,-71.55 0,-129.05 264.75,-129.05 264.75,-71.55 0,-71.55"/>
 <text text-anchor="middle" x="9.88" y="-95.25" font-family="Times New Roman,serif" font-size="14.00"> </text>
 <polyline fill="none" stroke="black" points="19.75,-71.55 19.75,-129.05"/>
-<text text-anchor="middle" x="132.38" y="-111.75" font-family="Times New Roman,serif" font-size="14.00">ID: 2</text>
-<text text-anchor="middle" x="132.38" y="-95.25" font-family="Times New Roman,serif" font-size="14.00">Nombre: Capibara</text>
-<text text-anchor="middle" x="132.38" y="-78.75" font-family="Times New Roman,serif" font-size="14.00">Ruta imagen: ./Reportes/Matriz_2.svg</text>
+<text text-anchor="middle" x="132.38" y="-111.75" font-family="Times New Roman,serif" font-size="14.00">ID: 5</text>
+<text text-anchor="middle" x="132.38" y="-95.25" font-family="Times New Roman,serif" font-size="14.00">Nombre: Mario</text>
+<text text-anchor="middle" x="132.38" y="-78.75" font-family="Times New Roman,serif" font-size="14.00">Ruta imagen: ./Reportes/Matriz_5.svg</text>
 <polyline fill="none" stroke="black" points="245,-71.55 245,-129.05"/>
 <text text-anchor="middle" x="254.88" y="-95.25" font-family="Times New Roman,serif" font-size="14.00"> </text>
 </g>
@@ -27,9 +27,9 @@
 <polygon fill="none" stroke="black" points="300.75,-71.55 300.75,-129.05 565.5,-129.05 565.5,-71.55 300.75,-71.55"/>
 <text text-anchor="middle" x="310.62" y="-95.25" font-family="Times New Roman,serif" font-size="14.00"> </text>
 <polyline fill="none" stroke="black" points="320.5,-71.55 320.5,-129.05"/>
-<text text-anchor="middle" x="433.12" y="-111.75" font-family="Times New Roman,serif" font-size="14.00">ID: 5</text>
-<text text-anchor="middle" x="433.12" y="-95.25" font-family="Times New Roman,serif" font-size="14.00">Nombre: Mario</text>
-<text text-anchor="middle" x="433.12" y="-78.75" font-family="Times New Roman,serif" font-size="14.00">Ruta imagen: ./Reportes/Matriz_5.svg</text>
+<text text-anchor="middle" x="433.12" y="-111.75" font-family="Times New Roman,serif" font-size="14.00">ID: 2</text>
+<text text-anchor="middle" x="433.12" y="-95.25" font-family="Times New Roman,serif" font-size="14.00">Nombre: Capibara</text>
+<text text-anchor="middle" x="433.12" y="-78.75" font-family="Times New Roman,serif" font-size="14.00">Ruta imagen: ./Reportes/Matriz_2.svg</text>
 <polyline fill="none" stroke="black" points="545.75,-71.55 545.75,-129.05"/>
 <text text-anchor="middle" x="555.62" y="-95.25" font-family="Times New Roman,serif" font-size="14.00"> </text>
 </g>

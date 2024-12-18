@@ -1,8 +1,8 @@
 digraph G {
     rankdir=LR;
     node[shape=record, height=.1]
-    nodo0[label="{<f1>|ID: 2\nNombre: Capibara\nRuta imagen: ./Reportes/Matriz_2.svg\n|<f2>}"];
-    nodo1[label="{<f1>|ID: 5\nNombre: Mario\nRuta imagen: ./Reportes/Matriz_5.svg\n|<f2>}"];
+    nodo0[label="{<f1>|ID: 5\nNombre: Mario\nRuta imagen: ./Reportes/Matriz_5.svg\n|<f2>}"];
+    nodo1[label="{<f1>|ID: 2\nNombre: Capibara\nRuta imagen: ./Reportes/Matriz_2.svg\n|<f2>}"];
     nodo2[label="{<f1>|ID: 3\nNombre: Rana\nRuta imagen: ./Reportes/Matriz_3.svg\n|<f2>}"];
     nodo0:f2 -> nodo1:f1[dir=both];
     nodo1:f2 -> nodo2:f1[dir=both];
