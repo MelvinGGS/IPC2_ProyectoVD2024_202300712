@@ -7,6 +7,7 @@ from models.stack import PilaFiguras
 import os
 from PIL import Image, ImageTk
 from models.lista_doble_circular import ListaDobleCircular
+from artistas.artistas import ModuloArtista  # Add this import
 
 class ModuloSolicitantes:
     def __init__(self, root, lista_artistas=None, lista_solicitantes=None, pila_figuras=None):
@@ -130,17 +131,8 @@ class ModuloSolicitantes:
         try:
             figura = self.pila_figuras.pop()
             
-            if not self.lista_artistas or self.lista_artistas.primero is None:
-                messagebox.showerror("Error", "No hay artistas disponibles")
-                self.pila_figuras.push(figura)  # Devolver la figura a la pila
-                return
-                
-            artista = self.lista_artistas.primero.valor
-            # Cambiar la forma de inicializar la cola
-            if 'cola_solicitudes' not in artista:
-                artista['cola_solicitudes'] = Cola()
-            
-            artista['cola_solicitudes'].encolar(figura, self.id_solicitante)
+            # Add to global queue instead of individual artist
+            ModuloArtista._cola_global.encolar(figura, self.id_solicitante)
             messagebox.showinfo("Éxito", "Solicitud enviada correctamente")
             
         except Exception as e:

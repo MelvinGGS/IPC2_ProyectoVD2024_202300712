@@ -8,6 +8,9 @@ from PIL import Image, ImageTk
 from models.lista_circular import ListaCircular
 
 class ModuloArtista:
+    # Add class-level shared queue
+    _cola_global = Cola()
+
     def __init__(self, root, lista_artistas=None, lista_solicitantes=None):
         self.root = root
         self.root.title("ARTISTAS")
@@ -18,6 +21,8 @@ class ModuloArtista:
         self.etiqueta_imagen = None
         self.lista_imagenes = ListaCircular()
         self.crear_widgets()
+        if not hasattr(ModuloArtista, '_cola_global'):
+            ModuloArtista._cola_global = Cola()
 
     def crear_widgets(self):
         tk.Label(self.root, text="Módulo Artistas", font=("Helvetica", 16)).pack(pady=2)
@@ -71,18 +76,13 @@ class ModuloArtista:
             messagebox.showerror("Error", "Artista no encontrado")
             return
             
-        if 'cola_solicitudes' not in artista:
-            artista['cola_solicitudes'] = Cola()
-            
-        if 'imagenes_procesadas' not in artista:
-            artista['imagenes_procesadas'] = []
-        
-        if artista['cola_solicitudes'].esta_vacia():
+        # Use global queue instead of individual artist queue
+        if ModuloArtista._cola_global.esta_vacia():
             messagebox.showinfo("Info", "No hay solicitudes pendientes")
             return
             
-        # Procesar la solicitud
-        figura, solicitante_id = artista['cola_solicitudes'].desencolar()
+        # Process the request from global queue
+        figura, solicitante_id = ModuloArtista._cola_global.desencolar()
         
         # Crear y procesar matriz dispersa
         matriz = MatrizDispersa()
@@ -99,6 +99,8 @@ class ModuloArtista:
             'solicitante': solicitante_id,
             'ruta_imagen': ruta_imagen
         }
+        if 'imagenes_procesadas' not in artista:
+            artista['imagenes_procesadas'] = []
         artista['imagenes_procesadas'].append(imagen_procesada)
         
         # También guardar en la lista circular para visualización
@@ -128,17 +130,15 @@ class ModuloArtista:
             messagebox.showerror("Error", "ID de artista no establecido")
             return
             
-        actual = self.lista_artistas.primero
-        while actual:
-            if actual.valor['id'] == self.id_artista:
-                if 'cola_solicitudes' in actual.valor:  # Cambiar aquí también
-                    ruta_imagen = actual.valor['cola_solicitudes'].generar_grafo()
-                    if ruta_imagen:
-                        self.mostrar_imagen_svg(ruta_imagen)
-                    return
-            actual = actual.siguiente
-            
-        messagebox.showinfo("Info", "No hay solicitudes en cola")
+        try:
+            # Use global queue for visualization
+            ruta_imagen = ModuloArtista._cola_global.generar_grafo()
+            if ruta_imagen:
+                self.mostrar_imagen_svg(ruta_imagen)
+            else:
+                messagebox.showinfo("Info", "No hay solicitudes en cola")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al mostrar cola: {str(e)}")
 
     def mostrar_imagen_svg(self, image_path):
         try:

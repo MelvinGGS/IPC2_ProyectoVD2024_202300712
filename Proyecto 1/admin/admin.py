@@ -1,5 +1,6 @@
 import sys
 import os
+import re  # Add this import at the top
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import tkinter as tk
@@ -72,7 +73,6 @@ class ModuloAdmin:
                 messagebox.showinfo("Éxito", "Archivo de artistas XML cargado correctamente")
             except Exception as e:
                 messagebox.showerror("Error", f"Error al cargar el archivo: {str(e)}")
-
 
     def cargar_solicitantes_xml(self, ruta_archivo):
         tree = ET.parse(ruta_archivo)

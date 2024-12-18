@@ -1,5 +1,0 @@
-digraph G {
-    rankdir=LR;
-    node[shape=record];
-    nodo0[label="{ID: 3\nNombre: Rana\nSolicitante: IPC-001}"];
-}
