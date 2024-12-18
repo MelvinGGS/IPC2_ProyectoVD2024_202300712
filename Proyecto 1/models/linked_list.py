@@ -1,12 +1,12 @@
 import os
 
-class Node:
-    def __init__(self, data):
-        self.valor = data
+class Nodo:
+    def __init__(self, datos):
+        self.valor = datos
         self.anterior = None
         self.siguiente = None
 
-class DoublyLinkedList:
+class ListaDoblementeEnlazada:
     def __init__(self):
         self.primero = None
         self.ultimo = None
@@ -15,8 +15,8 @@ class DoublyLinkedList:
     def __len__(self):
         return self.tamanio
 
-    def append(self, data):
-        nuevo = Node(data)
+    def agregar(self, datos):
+        nuevo = Nodo(datos)
         if self.primero is None and self.ultimo is None:
             self.primero = nuevo
             self.ultimo = nuevo
@@ -26,7 +26,7 @@ class DoublyLinkedList:
             self.ultimo = nuevo
         self.tamanio += 1
 
-    def search_by_id(self, id):
+    def buscar_por_id(self, id):
         actual = self.primero
         while actual:
             if actual.valor.get('id') == id:
@@ -34,8 +34,9 @@ class DoublyLinkedList:
             actual = actual.siguiente
         return False
 
-    def generate_graph(self):
+    def generar_grafo(self):
         codigo_dot = '''digraph G {
+    charset="utf-8"
     rankdir=LR;
     node[shape=record, height=.1]
 '''
@@ -67,13 +68,13 @@ class DoublyLinkedList:
         if not os.path.exists('./reportesdot'):
             os.makedirs('./reportesdot')
         
-        # Guardar archivo DOT
+        # Guardar archivo DOT con codificación utf-8
         dot_path = './reportesdot/ListaSolicitantes.dot'
-        with open(dot_path, 'w') as f:
+        with open(dot_path, 'w', encoding='utf-8') as f:
             f.write(codigo_dot)
         
-        # Generar imagen
+        # Generar imagen especificando la codificación
         img_path = './Reportes/ListaSolicitantes.svg'
-        os.system(f'dot -Tsvg {dot_path} -o {img_path}')
+        os.system(f'dot -Tsvg {dot_path} -o {img_path} -Gcharset=utf8')
         
         return img_path

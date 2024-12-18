@@ -1,106 +1,81 @@
-# admin_module.py
+import sys
+import os
+import re  # Add this import at the top
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import tkinter as tk
-<<<<<<< Updated upstream
-from tkinter import messagebox
-=======
 from tkinter import messagebox, filedialog
 import xml.etree.ElementTree as ET
-import re
-from models.linked_list import DoublyLinkedList
-from models.simple_list import SimpleList
-from PIL import Image, ImageTk  # Add this import
->>>>>>> Stashed changes
+from models.linked_list import ListaDoblementeEnlazada
+from models.simple_list import ListaSimple
+from PIL import Image, ImageTk
 
-class AdminModule:
+class ModuloAdmin:
     def __init__(self, root):
         self.root = root
         self.root.title("ADMINISTRADOR")
-<<<<<<< Updated upstream
-        root.geometry("800x600")
-        self.create_widgets()
-
-    def create_widgets(self):
-        tk.Label(self.root, text="Modulo administrador", font=("Helvetica", 16)).pack(pady=20)  # Increase font size and add padding
-        tk.Button(self.root, text="Usuarios", command=self.manage_users, font=("Helvetica", 16), width=20, height=2).pack(pady=10)  # Increase size and add padding
-        tk.Button(self.root, text="Contenido", command=self.manage_content, font=("Helvetica", 16), width=20, height=2).pack(pady=10)  # Increase size and add padding
-        tk.Button(self.root, text="Salir", command=self.logout, font=("Helvetica", 16), width=20, height=2).pack(pady=10)  # Increase size and add padding
-
-    def manage_users(self):
-        # ...existing code...
-        messagebox.showinfo("Manage Users", "User management functionality")
-
-    def manage_content(self):
-        # ...existing code...
-        messagebox.showinfo("Manage Content", "Content management functionality")
-=======
         root.geometry("1400x725")
-        self.solicitantes = DoublyLinkedList()
-        self.artistas = SimpleList()
-        self.image_label = None
+        self.solicitantes = ListaDoblementeEnlazada()
+        self.artistas = ListaSimple()
+        self.etiqueta_imagen = tk.Label(root)  # Initialize here instead of None
         self.crear_widgets()
 
     def crear_widgets(self):
-        # Minimizar al máximo los paddings
-        tk.Label(self.root, text="Modulo administrador", font=("Helvetica", 16)).pack(pady=2)
+        tk.Label(self.root, text="Módulo administrador", font=("Helvetica", 16)).pack(pady=2)
         
-        button_frame = tk.Frame(self.root)
-        button_frame.pack(pady=1)
+        marco_botones = tk.Frame(self.root)
+        marco_botones.pack(pady=1)
         
-        # Create buttons in the frame
-        tk.Button(button_frame, text="Cargar Solicitantes", command=self.manejar_solicitantes, 
+        tk.Button(marco_botones, text="Cargar Solicitantes", command=self.cargar_solicitantes, 
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
-        tk.Button(button_frame, text="Ver Solicitantes", command=self.ver_solicitantes, 
+        tk.Button(marco_botones, text="Ver Solicitantes", command=self.ver_solicitantes, 
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
-        tk.Button(button_frame, text="Cargar Artistas", command=self.manejar_artistas, 
+        tk.Button(marco_botones, text="Cargar Artistas", command=self.cargar_artistas, 
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
-        tk.Button(button_frame, text="Ver Artistas", command=self.ver_artistas, 
+        tk.Button(marco_botones, text="Ver Artistas", command=self.ver_artistas, 
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
-        tk.Button(button_frame, text="Cerrar Sesión", command=self.logout, 
+        tk.Button(marco_botones, text="Cerrar Sesión", command=self.cerrar_sesion, 
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
 
-        # Create main frame for image display with scrollbar
-        self.image_frame = tk.Frame(self.root)
-        self.image_frame.pack(pady=2, fill=tk.BOTH, expand=True)
+        # Marco para mostrar imágenes
+        self.marco_imagen = tk.Frame(self.root)
+        self.marco_imagen.pack(pady=2, fill=tk.BOTH, expand=True)
         
-        # Add horizontal scrollbar
-        h_scrollbar = tk.Scrollbar(self.image_frame, orient=tk.HORIZONTAL)
-        h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        # Barra de desplazamiento horizontal
+        barra_h = tk.Scrollbar(self.marco_imagen, orient=tk.HORIZONTAL)
+        barra_h.pack(side=tk.BOTTOM, fill=tk.X)
         
-        # Maximizar altura del canvas (ventana 725px - espacio para título/botones/scrollbar ≈ 80px)
-        max_canvas_height = 645  
+        altura_max_canvas = 645
         
-        # Add canvas with scrollbar and fixed height
-        self.canvas = tk.Canvas(self.image_frame, height=max_canvas_height, xscrollcommand=h_scrollbar.set)
+        self.canvas = tk.Canvas(self.marco_imagen, height=altura_max_canvas, xscrollcommand=barra_h.set)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
-        # Configure scrollbar
-        h_scrollbar.config(command=self.canvas.xview)
+        barra_h.config(command=self.canvas.xview)
         
-        # Create label inside canvas
-        self.image_label = tk.Label(self.canvas, text="Área de imagen")
-        self.canvas.create_window((0, 0), window=self.image_label, anchor='nw')
+        # Initialize and pack the image label properly
+        self.etiqueta_imagen = tk.Label(self.canvas)
+        self.canvas.create_window((0, 0), window=self.etiqueta_imagen, anchor='nw')
 
-    def manejar_solicitantes(self):
-        file_path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
-        if file_path:
+    def cargar_solicitantes(self):
+        ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivos XML", "*.xml")])
+        if ruta_archivo:
             try:
-                self.cargar_solicitantes_xml(file_path)
+                self.cargar_solicitantes_xml(ruta_archivo)
                 messagebox.showinfo("Éxito", "Archivo XML cargado correctamente")
             except Exception as e:
                 messagebox.showerror("Error", f"Error al cargar el archivo: {str(e)}")
 
-    def manejar_artistas(self):
-        file_path = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
-        if file_path:
+    def cargar_artistas(self):
+        ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivos XML", "*.xml")])
+        if ruta_archivo:
             try:
-                self.cargar_artistas_xml(file_path)
+                self.cargar_artistas_xml(ruta_archivo)
                 messagebox.showinfo("Éxito", "Archivo de artistas XML cargado correctamente")
             except Exception as e:
                 messagebox.showerror("Error", f"Error al cargar el archivo: {str(e)}")
 
-
-    def cargar_solicitantes_xml(self, file_path):
-        tree = ET.parse(file_path)
+    def cargar_solicitantes_xml(self, ruta_archivo):
+        tree = ET.parse(ruta_archivo)
         root = tree.getroot()
 
         for solicitante in root.findall('solicitante'):
@@ -109,9 +84,9 @@ class AdminModule:
             # Validar formato ID
             if not id.startswith('IPC-'):
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'IPC-'")
-            
+
             # Validar ID único
-            if self.solicitantes.search_by_id(id):
+            if self.solicitantes.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
 
             # Extraer datos
@@ -125,10 +100,10 @@ class AdminModule:
             }
 
             # Agregar a la lista
-            self.solicitantes.append(datos_solicitante)
+            self.solicitantes.agregar(datos_solicitante)
 
-    def cargar_artistas_xml(self, file_path):
-        tree = ET.parse(file_path)
+    def cargar_artistas_xml(self, ruta_archivo):
+        tree = ET.parse(ruta_archivo)
         root = tree.getroot()
 
         for artista in root.findall('Artista'):
@@ -137,9 +112,9 @@ class AdminModule:
             # Validar formato ID
             if not id.startswith('ART-'):
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'ART-'")
-            
+
             # Validar ID único
-            if self.artistas.search_by_id(id):
+            if self.artistas.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
 
             # Extraer datos
@@ -154,7 +129,7 @@ class AdminModule:
             }
 
             # Agregar a la lista
-            self.artistas.append(datos_artista)
+            self.artistas.agregar(datos_artista)
 
     def ver_solicitantes(self):
         if not self.solicitantes.primero:  # Changed from head to primero
@@ -162,8 +137,8 @@ class AdminModule:
             return
             
         try:
-            image_path = self.solicitantes.generate_graph()
-            self.mostrar_imagen_svg(image_path)
+            ruta_imagen = self.solicitantes.generar_grafo()
+            self.mostrar_imagen_svg(ruta_imagen)
         except Exception as e:
             messagebox.showerror("Error", f"Error al generar el grafo: {str(e)}")
 
@@ -173,22 +148,26 @@ class AdminModule:
             return
             
         try:
-            image_path = self.artistas.generate_graph()
-            self.mostrar_imagen_svg(image_path)
+            ruta_imagen = self.artistas.generar_grafo()
+            self.mostrar_imagen_svg(ruta_imagen)
         except Exception as e:
             messagebox.showerror("Error", f"Error al generar el grafo: {str(e)}")
->>>>>>> Stashed changes
 
-    def logout(self):
-        # ...existing code...
+    def cerrar_sesion(self):
+        ventana_login = tk.Tk()
+        from login import LoginWindow
+        app = LoginWindow(ventana_login, self.artistas, self.solicitantes)  # Pasamos las listas como parámetros
         self.root.destroy()
-<<<<<<< Updated upstream
-        # main function is not defined, so we remove the call
-=======
-        # main function is not defined, so we remove the call
+        ventana_login.mainloop()
 
     def mostrar_imagen_svg(self, image_path):
         try:
+            # First check if directories exist
+            if not os.path.exists('./Reportes'):
+                os.makedirs('./Reportes')
+            if not os.path.exists('./reportesdot'):
+                os.makedirs('./reportesdot')
+
             from cairosvg import svg2png
             png_path = image_path.replace('.svg', '.png')
             svg2png(url=image_path, write_to=png_path)
@@ -197,11 +176,11 @@ class AdminModule:
             image = Image.open(png_path)
             
             # Usar casi toda la altura disponible de la ventana
-            max_height = 500  # Dejamos 10px de margen
+            max_height = 450
             
             # Calculate new dimensions maintaining aspect ratio
             aspect_ratio = image.width / image.height
-            new_height = max_height  # Forzamos usar altura máxima
+            new_height = max_height
             new_width = int(new_height * aspect_ratio)
             
             # Resize image
@@ -209,26 +188,14 @@ class AdminModule:
             photo = ImageTk.PhotoImage(image)
             
             # Update image label
-            self.image_label.configure(image=photo)
-            self.image_label.image = photo
-            
-            # Update canvas scrollregion
-            self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
+            if self.etiqueta_imagen:
+                self.etiqueta_imagen.configure(image=photo)
+                self.etiqueta_imagen.image = photo  # Keep a reference!
+                
+                # Update canvas scrollregion
+                self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
+            else:
+                raise Exception("Image label not initialized")
             
         except Exception as e:
-            messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}))")
-
-    def display_image(self, image_path):
-        try:
-            # Load and resize image
-            image = Image.open(image_path)
-            image = image.resize((900, 550), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(image)
-            
-            # Update image label
-            if self.image_label:
-                self.image_label.configure(image=photo)
-                self.image_label.image = photo
-        except Exception as e:
-            messagebox.showerror("Error", f"Error al cargar la imagen: {str(e)})")
->>>>>>> Stashed changes
+            messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}")
