@@ -49,11 +49,12 @@ class ModuloArtista:
         
         barra_h.config(command=self.canvas.xview)
         
+        # Restore original image positioning
         self.etiqueta_imagen = tk.Label(self.canvas)
         self.canvas.create_window((0, 0), window=self.etiqueta_imagen, anchor='nw')
 
     def ver_solicitudes(self):
-        if not self.id_artista:  # Verifica si el ID está establecido
+        if not self.id_artista:
             messagebox.showerror("Error", "ID de artista no establecido")
             return
             
@@ -70,51 +71,54 @@ class ModuloArtista:
             messagebox.showerror("Error", "Artista no encontrado")
             return
             
-        # Cambiar la verificación de cola
         if 'cola_solicitudes' not in artista:
             artista['cola_solicitudes'] = Cola()
+            
+        if 'imagenes_procesadas' not in artista:
+            artista['imagenes_procesadas'] = []
         
         if artista['cola_solicitudes'].esta_vacia():
             messagebox.showinfo("Info", "No hay solicitudes pendientes")
             return
             
-        # Obtener la primera solicitud
+        # Procesar la solicitud
         figura, solicitante_id = artista['cola_solicitudes'].desencolar()
         
-        # Crear matriz dispersa
+        # Crear y procesar matriz dispersa
         matriz = MatrizDispersa()
         for pixel in figura['pixels']:
             matriz.insertar(pixel['fila'], pixel['col'], pixel['color'])
             
-        # Generar imagen de la matriz
+        # Generar imagen
         ruta_imagen = matriz.graficar(figura['id'])
         
-        # Guardar en lista circular del artista
-        self.lista_imagenes.insertar({
+        # Guardar la imagen procesada en el artista
+        imagen_procesada = {
             'id_figura': figura['id'],
             'nombre': figura['nombre'],
             'solicitante': solicitante_id,
             'ruta_imagen': ruta_imagen
-        })
+        }
+        artista['imagenes_procesadas'].append(imagen_procesada)
         
-        # Guardar en lista doble circular del solicitante
+        # También guardar en la lista circular para visualización
+        self.lista_imagenes.insertar(imagen_procesada)
+        
+        # Actualizar solicitante
         solicitante = None
         actual = self.lista_solicitantes.primero
         while actual:
             if actual.valor['id'] == solicitante_id:
-                solicitante = actual.valor
+                if 'imagenes' not in actual.valor:
+                    actual.valor['imagenes'] = []
+                actual.valor['imagenes'].append({
+                    'id_figura': figura['id'],
+                    'nombre': figura['nombre'],
+                    'artista': self.id_artista,
+                    'ruta_imagen': ruta_imagen
+                })
                 break
             actual = actual.siguiente
-            
-        if solicitante:
-            if 'imagenes' not in solicitante:
-                solicitante['imagenes'] = []
-            solicitante['imagenes'].append({
-                'id_figura': figura['id'],
-                'nombre': figura['nombre'],
-                'artista': self.id_artista,
-                'ruta_imagen': ruta_imagen
-            })
             
         messagebox.showinfo("Éxito", "Solicitud procesada correctamente")
         self.mostrar_imagen_svg(ruta_imagen)

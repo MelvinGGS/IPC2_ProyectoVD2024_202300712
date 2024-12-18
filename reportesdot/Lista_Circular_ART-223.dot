@@ -2,5 +2,7 @@ digraph G {
     rankdir=LR;
     node[shape=record, height=.1]
     nodo0[label="{ID: 2\nNombre: Capibara\nSolicitante: IPC-001|<f1>}"];
-    nodo0 -> nodo0[constraint=false];
+    nodo1[label="{ID: 5\nNombre: Mario\nSolicitante: IPC-001|<f1>}"];
+    nodo0 -> nodo1;
+    nodo1 -> nodo0[constraint=false];
 }

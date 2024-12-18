@@ -1,10 +1,10 @@
 digraph G {
     rankdir=LR;
-    node[shape=record];
-    nodo0[label="ID: 3\nNombre: Rana\nArtista: ART-223"];
-    nodo0 -> nodo1;
-    nodo1 -> nodo0;
-    nodo1[label="ID: 2\nNombre: Capibara\nArtista: ART-223"];
-    nodo1 -> nodo0;
-    nodo0 -> nodo1;
+    node[shape=record, height=.1]
+    nodo0[label="{<f1>|ID: 2\nNombre: Capibara\nRuta imagen: ./Reportes/Matriz_2.svg\n|<f2>}"];
+    nodo1[label="{<f1>|ID: 5\nNombre: Mario\nRuta imagen: ./Reportes/Matriz_5.svg\n|<f2>}"];
+    nodo2[label="{<f1>|ID: 3\nNombre: Rana\nRuta imagen: ./Reportes/Matriz_3.svg\n|<f2>}"];
+    nodo0:f2 -> nodo1:f1[dir=both];
+    nodo1:f2 -> nodo2:f1[dir=both];
+    nodo0:f1 -> nodo2:f2 [dir=both constraint=false];
 }

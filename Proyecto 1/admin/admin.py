@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import tkinter as tk
 from tkinter import messagebox, filedialog
 import xml.etree.ElementTree as ET
@@ -12,7 +16,7 @@ class ModuloAdmin:
         root.geometry("1400x725")
         self.solicitantes = ListaDoblementeEnlazada()
         self.artistas = ListaSimple()
-        self.etiqueta_imagen = None
+        self.etiqueta_imagen = tk.Label(root)  # Initialize here instead of None
         self.crear_widgets()
 
     def crear_widgets(self):
@@ -47,7 +51,8 @@ class ModuloAdmin:
         
         barra_h.config(command=self.canvas.xview)
         
-        self.etiqueta_imagen = tk.Label(self.canvas, text="Área de imagen")
+        # Initialize and pack the image label properly
+        self.etiqueta_imagen = tk.Label(self.canvas)
         self.canvas.create_window((0, 0), window=self.etiqueta_imagen, anchor='nw')
 
     def cargar_solicitantes(self):
@@ -157,6 +162,12 @@ class ModuloAdmin:
 
     def mostrar_imagen_svg(self, image_path):
         try:
+            # First check if directories exist
+            if not os.path.exists('./Reportes'):
+                os.makedirs('./Reportes')
+            if not os.path.exists('./reportesdot'):
+                os.makedirs('./reportesdot')
+
             from cairosvg import svg2png
             png_path = image_path.replace('.svg', '.png')
             svg2png(url=image_path, write_to=png_path)
@@ -165,11 +176,11 @@ class ModuloAdmin:
             image = Image.open(png_path)
             
             # Usar casi toda la altura disponible de la ventana
-            max_height = 450  # Dejamos 10px de margen
+            max_height = 450
             
             # Calculate new dimensions maintaining aspect ratio
             aspect_ratio = image.width / image.height
-            new_height = max_height  # Forzamos usar altura máxima
+            new_height = max_height
             new_width = int(new_height * aspect_ratio)
             
             # Resize image
@@ -177,25 +188,14 @@ class ModuloAdmin:
             photo = ImageTk.PhotoImage(image)
             
             # Update image label
-            self.etiqueta_imagen.configure(image=photo)
-            self.etiqueta_imagen.image = photo
-            
-            # Update canvas scrollregion
-            self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
-            
-        except Exception as e:
-            messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}))")
-
-    def display_image(self, image_path):
-        try:
-            # Load and resize image
-            image = Image.open(image_path)
-            image = image.resize((900, 550), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(image)
-            
-            # Update image label
             if self.etiqueta_imagen:
                 self.etiqueta_imagen.configure(image=photo)
-                self.etiqueta_imagen.image = photo
+                self.etiqueta_imagen.image = photo  # Keep a reference!
+                
+                # Update canvas scrollregion
+                self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
+            else:
+                raise Exception("Image label not initialized")
+            
         except Exception as e:
-            messagebox.showerror("Error", f"Error al cargar la imagen: {str(e)})")
+            messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}")

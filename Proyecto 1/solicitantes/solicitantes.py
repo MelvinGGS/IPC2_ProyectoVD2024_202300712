@@ -9,17 +9,27 @@ from PIL import Image, ImageTk
 from models.lista_doble_circular import ListaDobleCircular
 
 class ModuloSolicitantes:
-    def __init__(self, root, lista_artistas=None, lista_solicitantes=None):
+    def __init__(self, root, lista_artistas=None, lista_solicitantes=None, pila_figuras=None):
         self.root = root
         self.root.title("SOLICITANTES")
         root.geometry("1400x725")
-        # Guardar referencia a las listas
         self.lista_artistas = lista_artistas
         self.lista_solicitantes = lista_solicitantes
-        self.pila_figuras = PilaFiguras()
-        self.id_solicitante = None  # Se debe establecer al iniciar sesión
+        # Store state
+        if not hasattr(ModuloSolicitantes, '_pila_global'):
+            ModuloSolicitantes._pila_global = PilaFiguras()
+        
+        self.pila_figuras = ModuloSolicitantes._pila_global
+        if pila_figuras and pila_figuras.tamanio > 0:
+            temp_stack = PilaFiguras()
+            while not pila_figuras.esta_vacia():
+                temp_stack.push(pila_figuras.pop())
+            while not temp_stack.esta_vacia():
+                self.pila_figuras.push(temp_stack.pop())
+        self.id_solicitante = None
         self.etiqueta_imagen = None
         self.lista_imagenes = ListaDobleCircular()
+        self.indice_imagen_actual = 0
         self.crear_widgets()
 
     def crear_widgets(self):
@@ -43,23 +53,45 @@ class ModuloSolicitantes:
         tk.Button(marco_botones, text="Cerrar Sesión", command=self.cerrar_sesion,
                  font=("Helvetica", 12), width=15, height=2).pack(side=tk.LEFT, padx=10)
 
-        # Marco para mostrar imágenes
-        self.marco_imagen = tk.Frame(self.root)
-        self.marco_imagen.pack(pady=2, fill=tk.BOTH, expand=True)
+        # Create main container frame
+        self.frame_principal = tk.Frame(self.root)
+        self.frame_principal.pack(expand=True, fill=tk.BOTH)
+        
+        # Crear frame para la imagen
+        self.frame_imagen = tk.Frame(self.frame_principal)
+        self.frame_imagen.pack(expand=True, fill=tk.BOTH, pady=5)
         
         # Barra de desplazamiento horizontal
-        barra_h = tk.Scrollbar(self.marco_imagen, orient=tk.HORIZONTAL)
+        barra_h = tk.Scrollbar(self.frame_imagen, orient=tk.HORIZONTAL)
         barra_h.pack(side=tk.BOTTOM, fill=tk.X)
         
-        altura_max_canvas = 645
-        
-        self.canvas = tk.Canvas(self.marco_imagen, height=altura_max_canvas, xscrollcommand=barra_h.set)
-        self.canvas.pack(fill=tk.BOTH, expand=True)
-        
+        # Canvas configuration
+        self.canvas = tk.Canvas(self.frame_imagen, height=500, xscrollcommand=barra_h.set)
+        self.canvas.pack(expand=True, fill=tk.BOTH)
         barra_h.config(command=self.canvas.xview)
         
-        self.etiqueta_imagen = tk.Label(self.canvas)
-        self.canvas.create_window((0, 0), window=self.etiqueta_imagen, anchor='nw')
+        # Frame contenedor para la imagen
+        self.frame_contenido = tk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.frame_contenido, anchor='nw')
+        
+        # Etiqueta para la imagen
+        self.etiqueta_imagen = tk.Label(self.frame_contenido)
+        self.etiqueta_imagen.pack(expand=True, fill=tk.BOTH)
+        
+        # Frame para botones de navegación
+        self.frame_navegacion = tk.Frame(self.frame_principal)
+        self.frame_navegacion.pack(side=tk.BOTTOM, pady=10)
+        
+        # Botones de navegación
+        self.btn_anterior = tk.Button(self.frame_navegacion, text="Anterior", 
+                                    command=self.imagen_anterior,
+                                    state=tk.DISABLED)
+        self.btn_anterior.pack(side=tk.LEFT, padx=5)
+        
+        self.btn_siguiente = tk.Button(self.frame_navegacion, text="Siguiente", 
+                                     command=self.imagen_siguiente,
+                                     state=tk.DISABLED)
+        self.btn_siguiente.pack(side=tk.LEFT, padx=5)
 
     def ver_artistas(self):
         ruta_archivo = filedialog.askopenfilename(filetypes=[("Archivos XML", "*.xml")])
@@ -83,6 +115,7 @@ class ModuloSolicitantes:
                     'color': pixel.text
                 })
             
+            # Simplemente apilar la figura sin más procesamiento
             self.pila_figuras.push(figura)
             messagebox.showinfo("Éxito", "Figura cargada correctamente")
             
@@ -135,27 +168,31 @@ class ModuloSolicitantes:
             png_path = image_path.replace('.svg', '.png')
             svg2png(url=image_path, write_to=png_path)
             
-            # Load image
             image = Image.open(png_path)
             
-            # Usar casi toda la altura disponible de la ventana
-            max_height = 450
+            # Calculate dimensions to fit in window
+            window_width = self.frame_imagen.winfo_width() or 800
+            window_height = self.frame_imagen.winfo_height() or 500
             
-            # Calculate new dimensions maintaining aspect ratio
-            aspect_ratio = image.width / image.height
-            new_height = max_height
-            new_width = int(new_height * aspect_ratio)
+            # Calculate scaling
+            img_ratio = image.width / image.height
+            window_ratio = window_width / window_height
             
-            # Resize image
+            if img_ratio > window_ratio:
+                new_width = window_width
+                new_height = int(window_width / img_ratio)
+            else:
+                new_height = window_height
+                new_width = int(window_height * img_ratio)
+            
             image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(image)
             
-            # Update image label
             self.etiqueta_imagen.configure(image=photo)
             self.etiqueta_imagen.image = photo
             
             # Update canvas scrollregion
-            self.canvas.configure(scrollregion=(0, 0, new_width, new_height))
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"))
             
         except Exception as e:
             messagebox.showerror("Error", f"Error al mostrar la imagen: {str(e)}")
@@ -186,27 +223,66 @@ class ModuloSolicitantes:
     def modificar_perfil(self):
         try:
             actual = self.lista_solicitantes.primero
-            imagenes_mostradas = []
+            imagenes = []
             
             while actual:
                 if actual.valor['id'] == self.id_solicitante:
                     if 'imagenes' in actual.valor:
-                        for imagen in actual.valor['imagenes']:
-                            if imagen['ruta_imagen'] not in imagenes_mostradas:
-                                self.mostrar_imagen_svg(imagen['ruta_imagen'])
-                                imagenes_mostradas.append(imagen['ruta_imagen'])
+                        imagenes = actual.valor['imagenes']
                     break
                 actual = actual.siguiente
                 
-            if not imagenes_mostradas:
-                messagebox.showinfo("Info", "No hay imágenes para mostrar")
+            if not imagenes:
+                messagebox.showinfo("Info", "No hay imágenes procesadas")
+                return
+
+            # Clear existing images and add new ones
+            self.lista_imagenes = ListaDobleCircular()
+            for imagen in imagenes:
+                self.lista_imagenes.insertar(imagen)
+            
+            self.indice_imagen_actual = 0
+            self.mostrar_imagen_actual()
+            self.actualizar_estados_botones()
                 
         except Exception as e:
             messagebox.showerror("Error", f"Error al mostrar las imágenes: {str(e)}")
 
+    def imagen_anterior(self):
+        if self.indice_imagen_actual > 0:
+            self.indice_imagen_actual -= 1
+            self.mostrar_imagen_actual()
+        self.actualizar_estados_botones()
+
+    def imagen_siguiente(self):
+        if self.indice_imagen_actual < len(self.lista_imagenes) - 1:
+            self.indice_imagen_actual += 1
+            self.mostrar_imagen_actual()
+        self.actualizar_estados_botones()
+
+    def actualizar_estados_botones(self):
+        self.btn_anterior['state'] = tk.NORMAL if self.indice_imagen_actual > 0 else tk.DISABLED
+        self.btn_siguiente['state'] = tk.NORMAL if self.indice_imagen_actual < len(self.lista_imagenes) - 1 else tk.DISABLED
+
+    def mostrar_imagen_actual(self):
+        if self.lista_imagenes.tamanio == 0:
+            return
+            
+        # Get current image
+        actual = self.lista_imagenes.primero
+        for _ in range(self.indice_imagen_actual):
+            actual = actual.siguiente
+            if actual == self.lista_imagenes.primero:
+                break
+                
+        if actual and 'ruta_imagen' in actual.valor:
+            self.mostrar_imagen_svg(actual.valor['ruta_imagen'])
+
     def cerrar_sesion(self):
         ventana_login = tk.Tk()
         from login import LoginWindow
-        app = LoginWindow(ventana_login, self.lista_artistas, self.lista_solicitantes)
+        # Pass the current pile state
+        app = LoginWindow(ventana_login, self.lista_artistas, 
+                         self.lista_solicitantes, self.pila_figuras)
         self.root.destroy()
         ventana_login.mainloop()

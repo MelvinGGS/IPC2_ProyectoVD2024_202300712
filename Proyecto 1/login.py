@@ -8,7 +8,7 @@ from models.linked_list import ListaDoblementeEnlazada
 from models.simple_list import ListaSimple
 
 class LoginWindow:
-    def __init__(self, root, lista_artistas=None, lista_solicitantes=None):
+    def __init__(self, root, lista_artistas=None, lista_solicitantes=None, pila_figuras=None):
         self.root = root
         self.root.title("Inicio de Sesión - IPCArt-Studio")
         self.root.geometry("800x600")
@@ -16,6 +16,7 @@ class LoginWindow:
         # Usar las listas existentes o crear nuevas si no se proporcionan
         self.lista_artistas = lista_artistas if lista_artistas is not None else ListaSimple()
         self.lista_solicitantes = lista_solicitantes if lista_solicitantes is not None else ListaDoblementeEnlazada()
+        self.pila_figuras = pila_figuras  # Store pile reference
         
         self.crear_widgets()
     
@@ -71,7 +72,8 @@ class LoginWindow:
         elif tipo_usuario == "solicitante":
             self.root.destroy()
             ventana_solicitante = tk.Tk()
-            modulo = ModuloSolicitantes(ventana_solicitante, self.lista_artistas, self.lista_solicitantes)
+            modulo = ModuloSolicitantes(ventana_solicitante, self.lista_artistas, 
+                                      self.lista_solicitantes, self.pila_figuras)
             modulo.id_solicitante = usuario  # Store the user ID
             ventana_solicitante.mainloop()
         else:

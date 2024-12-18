@@ -144,36 +144,54 @@ class MatrizDispersa:
         dot = 'digraph MatrizDispersa {\n'
         dot += '    node [shape=box];\n'
         dot += '    graph [rankdir=TB];\n'
+        dot += '    node [width=0.5 height=0.5 fixedsize=true];\n'
         
-        # Generar nodos
+        # Encontrar dimensiones de la matriz
+        max_fila = 0
+        max_col = 0
+        actual_fila = self.filas.primero
+        while actual_fila:
+            max_fila = max(max_fila, actual_fila.id)
+            actual_celda = actual_fila.acceso
+            while actual_celda:
+                max_col = max(max_col, actual_celda.y)
+                actual_celda = actual_celda.derecha
+            actual_fila = actual_fila.siguiente
+        
+        # Crear nodos invisibles para mantener la estructura
+        for i in range(max_fila + 1):
+            for j in range(max_col + 1):
+                dot += f'    nodo_{i}_{j} [label="", style=invis];\n'
+        
+        # Crear subgrafos para cada fila para mantener el orden
+        for i in range(max_fila + 1):
+            dot += f'    {{rank=same; '
+            for j in range(max_col + 1):
+                dot += f'nodo_{i}_{j} '
+            dot += '}\n'
+        
+        # Conectar nodos horizontalmente
+        for i in range(max_fila + 1):
+            for j in range(max_col):
+                dot += f'    nodo_{i}_{j} -> nodo_{i}_{j+1} [style=invis];\n'
+        
+        # Conectar nodos verticalmente
+        for j in range(max_col + 1):
+            for i in range(max_fila):
+                dot += f'    nodo_{i}_{j} -> nodo_{i+1}_{j} [style=invis];\n'
+        
+        # Agregar nodos con color
         actual_fila = self.filas.primero
         while actual_fila:
             actual_celda = actual_fila.acceso
             while actual_celda:
-                dot += f'    nodo_{actual_celda.x}_{actual_celda.y}[label="", style=filled, fillcolor="{actual_celda.valor}"];\n'
+                dot += f'    nodo_{actual_celda.x}_{actual_celda.y} [label="", style=filled, fillcolor="{actual_celda.valor}"];\n'
                 actual_celda = actual_celda.derecha
             actual_fila = actual_fila.siguiente
         
-        # Generar conexiones
-        actual_fila = self.filas.primero
-        while actual_fila:
-            actual_celda = actual_fila.acceso
-            while actual_celda and actual_celda.derecha:
-                dot += f'    nodo_{actual_celda.x}_{actual_celda.y} -> nodo_{actual_celda.derecha.x}_{actual_celda.derecha.y} [dir=both];\n'
-                actual_celda = actual_celda.derecha
-            actual_fila = actual_fila.siguiente
+        dot += '}\n'
         
-        actual_col = self.columnas.primero
-        while actual_col:
-            actual_celda = actual_col.acceso
-            while actual_celda and actual_celda.abajo:
-                dot += f'    nodo_{actual_celda.x}_{actual_celda.y} -> nodo_{actual_celda.abajo.x}_{actual_celda.abajo.y} [dir=both];\n'
-                actual_celda = actual_celda.abajo
-            actual_col = actual_col.siguiente
-            
-        dot += '}'
-        
-        # Guardar y generar imagen
+        # Guardar archivos
         dot_path = f'./reportesdot/Matriz_{id_figura}.dot'
         svg_path = f'./Reportes/Matriz_{id_figura}.svg'
         
