@@ -1,12 +1,22 @@
+<<<<<<< Updated upstream
 # artist_module.py
 import tkinter as tk
 from tkinter import messagebox
 from models.cola import Cola  # Changed import
+=======
+import tkinter as tk
+from tkinter import messagebox
+from models.cola import Cola
+>>>>>>> Stashed changes
 from models.stack import PilaFiguras
 from models.matriz_dispersa import MatrizDispersa
 from PIL import Image, ImageTk
 from models.lista_circular import ListaCircular
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 class ModuloArtista:
     # Add class-level shared queue
     _cola_global = Cola()
@@ -64,6 +74,7 @@ class ModuloArtista:
             return
             
         # Buscar el artista actual
+<<<<<<< Updated upstream
         artista = None
         actual = self.lista_artistas.primero
         while actual:
@@ -72,6 +83,10 @@ class ModuloArtista:
                 break
             actual = actual.siguiente
             
+=======
+        artista = self.lista_artistas.buscar_por_id(self.id_artista)
+        
+>>>>>>> Stashed changes
         if not artista:
             messagebox.showerror("Error", "Artista no encontrado")
             return
@@ -86,6 +101,7 @@ class ModuloArtista:
         
         # Crear y procesar matriz dispersa
         matriz = MatrizDispersa()
+<<<<<<< Updated upstream
         for pixel in figura['pixels']:
             matriz.insertar(pixel['fila'], pixel['col'], pixel['color'])
             
@@ -102,11 +118,23 @@ class ModuloArtista:
         if 'imagenes_procesadas' not in artista:
             artista['imagenes_procesadas'] = []
         artista['imagenes_procesadas'].append(imagen_procesada)
+=======
+        for pixel in figura.obtener_pixels():
+            matriz.insertar(pixel.fila, pixel.col, pixel.color)
+            
+        # Generar imagen
+        ruta_imagen = matriz.graficar(figura.id)
+        
+        # Guardar la imagen procesada en el artista
+        imagen_procesada = imagen_procesada(figura.id, figura.nombre, solicitante_id, ruta_imagen)
+        artista.agregar_imagen_procesada(imagen_procesada)
+>>>>>>> Stashed changes
         
         # También guardar en la lista circular para visualización
         self.lista_imagenes.insertar(imagen_procesada)
         
         # Actualizar solicitante
+<<<<<<< Updated upstream
         solicitante = None
         actual = self.lista_solicitantes.primero
         while actual:
@@ -122,6 +150,12 @@ class ModuloArtista:
                 break
             actual = actual.siguiente
             
+=======
+        solicitante = self.lista_solicitantes.buscar_por_id(solicitante_id)
+        if solicitante:
+            solicitante.agregar_imagen(imagen_procesada(figura.id, figura.nombre, self.id_artista, ruta_imagen))
+        
+>>>>>>> Stashed changes
         messagebox.showinfo("Éxito", "Solicitud procesada correctamente")
         self.mostrar_imagen_svg(ruta_imagen)
 
@@ -190,4 +224,8 @@ class ModuloArtista:
         from login import LoginWindow
         app = LoginWindow(ventana_login, self.lista_artistas, self.lista_solicitantes)
         self.root.destroy()
+<<<<<<< Updated upstream
         ventana_login.mainloop()
+=======
+        ventana_login.mainloop()
+>>>>>>> Stashed changes

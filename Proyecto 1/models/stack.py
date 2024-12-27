@@ -49,6 +49,7 @@ class PilaFiguras:
         
         # Add all values separated by |
         actual = self.cima
+<<<<<<< Updated upstream
         valores = []
         while actual:
             valores.append(f"{actual.figura['nombre']}\\n{len(actual.figura['pixels'])} px")
@@ -56,6 +57,17 @@ class PilaFiguras:
         
         dot += '|'.join(valores)
         dot += '"];\n'
+=======
+        valores_concatenados = ""
+        while actual:
+            if valores_concatenados:
+                valores_concatenados += "|"
+            valores_concatenados += f"{actual.figura.nombre}\\n{actual.figura.pixels.tamanio} px"
+            actual = actual.abajo
+        
+        dot += valores_concatenados
+        dot += '"]\n'
+>>>>>>> Stashed changes
         dot += '}\n'
         
         # Save files

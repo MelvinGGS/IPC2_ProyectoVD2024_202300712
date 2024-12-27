@@ -77,17 +77,31 @@ class ModuloAdmin:
     def cargar_solicitantes_xml(self, ruta_archivo):
         tree = ET.parse(ruta_archivo)
         root = tree.getroot()
+<<<<<<< Updated upstream
+=======
+        duplicados = set()  # Replaced list with a set
+>>>>>>> Stashed changes
 
         for solicitante in root.findall('solicitante'):
             id = solicitante.get('id')
             
             # Validar formato ID
             if not id.startswith('IPC-'):
+<<<<<<< Updated upstream
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'IPC-'")
 
             # Validar ID único
             if self.solicitantes.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
+=======
+                messagebox.showwarning("Advertencia", f"ID inválido omitido: {id}. Debe comenzar con 'IPC-'")
+                continue
+
+            # Verificar duplicados
+            if self.solicitantes.buscar_por_id(id):
+                duplicados.add(id)  # Using set to store duplicates
+                continue
+>>>>>>> Stashed changes
 
             # Extraer datos
             datos_solicitante = {
@@ -102,20 +116,40 @@ class ModuloAdmin:
             # Agregar a la lista
             self.solicitantes.agregar(datos_solicitante)
 
+<<<<<<< Updated upstream
     def cargar_artistas_xml(self, ruta_archivo):
         tree = ET.parse(ruta_archivo)
         root = tree.getroot()
+=======
+        if duplicados:
+            messagebox.showinfo("Información", f"Se omitieron los siguientes IDs duplicados: {', '.join(duplicados)}")
+
+    def cargar_artistas_xml(self, ruta_archivo):
+        tree = ET.parse(ruta_archivo)
+        root = tree.getroot()
+        duplicados = set()  # Replaced list with a set
+>>>>>>> Stashed changes
 
         for artista in root.findall('Artista'):
             id = artista.get('id')
             
             # Validar formato ID
             if not id.startswith('ART-'):
+<<<<<<< Updated upstream
                 raise ValueError(f"ID inválido: {id}. Debe comenzar con 'ART-'")
 
             # Validar ID único
             if self.artistas.buscar_por_id(id):
                 raise ValueError(f"ID duplicado: {id}")
+=======
+                messagebox.showwarning("Advertencia", f"ID inválido omitido: {id}. Debe comenzar con 'ART-'")
+                continue
+
+            # Verificar duplicados
+            if self.artistas.buscar_por_id(id):
+                duplicados.add(id)  # Using set to store duplicates
+                continue
+>>>>>>> Stashed changes
 
             # Extraer datos
             datos_artista = {
@@ -131,6 +165,12 @@ class ModuloAdmin:
             # Agregar a la lista
             self.artistas.agregar(datos_artista)
 
+<<<<<<< Updated upstream
+=======
+        if duplicados:
+            messagebox.showinfo("Información", f"Se omitieron los siguientes IDs duplicados: {', '.join(duplicados)}")
+
+>>>>>>> Stashed changes
     def ver_solicitantes(self):
         if not self.solicitantes.primero:  # Changed from head to primero
             messagebox.showinfo("Info", "No hay solicitantes cargados")

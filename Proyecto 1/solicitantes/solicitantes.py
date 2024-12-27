@@ -103,6 +103,7 @@ class ModuloSolicitantes:
             tree = ET.parse(ruta_archivo)
             root = tree.getroot()
             
+<<<<<<< Updated upstream
             figura = {
                 'id': root.find('nombre').get('id'),
                 'nombre': root.find('nombre').text,
@@ -117,6 +118,19 @@ class ModuloSolicitantes:
                 })
             
             # Simplemente apilar la figura sin más procesamiento
+=======
+            figura = ET.Element('Figura')
+            figura.set('id', root.find('nombre').get('id'))
+            figura.set('nombre', root.find('nombre').text)
+            figura_diseño = ET.SubElement(figura, 'Diseño')
+            
+            for pixel in root.find('diseño').findall('pixel'):
+                nuevo_pixel = ET.SubElement(figura_diseño, 'Pixel')
+                nuevo_pixel.set('fila', str(int(pixel.get('fila'))))
+                nuevo_pixel.set('col', str(int(pixel.get('col'))))
+                nuevo_pixel.text = pixel.text
+            
+>>>>>>> Stashed changes
             self.pila_figuras.push(figura)
             messagebox.showinfo("Éxito", "Figura cargada correctamente")
             
@@ -130,8 +144,11 @@ class ModuloSolicitantes:
         
         try:
             figura = self.pila_figuras.pop()
+<<<<<<< Updated upstream
             
             # Add to global queue instead of individual artist
+=======
+>>>>>>> Stashed changes
             ModuloArtista._cola_global.encolar(figura, self.id_solicitante)
             messagebox.showinfo("Éxito", "Solicitud enviada correctamente")
             
@@ -191,12 +208,21 @@ class ModuloSolicitantes:
 
     def ver_perfil(self):
         try:
+<<<<<<< Updated upstream
             # Buscar el solicitante actual
             actual = self.lista_solicitantes.primero
             while actual:
                 if actual.valor['id'] == self.id_solicitante:
                     if 'imagenes' in actual.valor:
                         for imagen in actual.valor['imagenes']:
+=======
+            actual = self.lista_solicitantes.primero
+            while actual:
+                if actual.valor.get('id') == self.id_solicitante:
+                    imagenes = actual.valor.get('imagenes', None)
+                    if imagenes:
+                        for imagen in imagenes:
+>>>>>>> Stashed changes
                             self.lista_imagenes.insertar(imagen)
                     break
                 actual = actual.siguiente
@@ -215,12 +241,20 @@ class ModuloSolicitantes:
     def modificar_perfil(self):
         try:
             actual = self.lista_solicitantes.primero
+<<<<<<< Updated upstream
             imagenes = []
             
             while actual:
                 if actual.valor['id'] == self.id_solicitante:
                     if 'imagenes' in actual.valor:
                         imagenes = actual.valor['imagenes']
+=======
+            imagenes = None
+            
+            while actual:
+                if actual.valor.get('id') == self.id_solicitante:
+                    imagenes = actual.valor.get('imagenes', None)
+>>>>>>> Stashed changes
                     break
                 actual = actual.siguiente
                 
@@ -247,14 +281,22 @@ class ModuloSolicitantes:
         self.actualizar_estados_botones()
 
     def imagen_siguiente(self):
+<<<<<<< Updated upstream
         if self.indice_imagen_actual < len(self.lista_imagenes) - 1:
+=======
+        if self.indice_imagen_actual < self.lista_imagenes.tamanio - 1:
+>>>>>>> Stashed changes
             self.indice_imagen_actual += 1
             self.mostrar_imagen_actual()
         self.actualizar_estados_botones()
 
     def actualizar_estados_botones(self):
         self.btn_anterior['state'] = tk.NORMAL if self.indice_imagen_actual > 0 else tk.DISABLED
+<<<<<<< Updated upstream
         self.btn_siguiente['state'] = tk.NORMAL if self.indice_imagen_actual < len(self.lista_imagenes) - 1 else tk.DISABLED
+=======
+        self.btn_siguiente['state'] = tk.NORMAL if self.indice_imagen_actual < self.lista_imagenes.tamanio - 1 else tk.DISABLED
+>>>>>>> Stashed changes
 
     def mostrar_imagen_actual(self):
         if self.lista_imagenes.tamanio == 0:
@@ -267,7 +309,11 @@ class ModuloSolicitantes:
             if actual == self.lista_imagenes.primero:
                 break
                 
+<<<<<<< Updated upstream
         if actual and 'ruta_imagen' in actual.valor:
+=======
+        if actual and actual.valor.get('ruta_imagen'):
+>>>>>>> Stashed changes
             self.mostrar_imagen_svg(actual.valor['ruta_imagen'])
 
     def cerrar_sesion(self):
@@ -277,4 +323,8 @@ class ModuloSolicitantes:
         app = LoginWindow(ventana_login, self.lista_artistas, 
                          self.lista_solicitantes, self.pila_figuras)
         self.root.destroy()
+<<<<<<< Updated upstream
         ventana_login.mainloop()
+=======
+        ventana_login.mainloop()
+>>>>>>> Stashed changes
