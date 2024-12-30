@@ -1,0 +1,9 @@
+digraph G {
+    rankdir=LR;
+    node[shape=record];
+    nodo0[label="{ID: 4\nNombre: Amongus\nSolicitante: IPC-001}"];
+    nodo1[label="{ID: 2\nNombre: Capibara\nSolicitante: IPC-001}"];
+    nodo0 -> nodo1;
+    nodo2[label="{ID: 5\nNombre: IronMan\nSolicitante: IPC-001}"];
+    nodo1 -> nodo2;
+}

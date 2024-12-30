@@ -1,0 +1,5 @@
+digraph G {
+    rankdir=LR;
+    node[shape=Mrecord];
+    Pila[xlabel="Pila" label="Rana\n146 px|IronMan\n199 px"];
+}
