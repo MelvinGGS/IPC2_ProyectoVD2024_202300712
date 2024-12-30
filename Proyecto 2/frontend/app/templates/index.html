@@ -78,7 +78,13 @@
 <body>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
-        <form action="/login" method="POST">
+        {% if error %}
+        <div style="color: red; text-align: center; margin-bottom: 15px;">
+            {{ error }}
+        </div>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input type="text" id="username" name="username" required>

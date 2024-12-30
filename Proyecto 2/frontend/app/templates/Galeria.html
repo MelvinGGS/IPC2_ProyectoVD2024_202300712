@@ -47,14 +47,26 @@
 </head>
 <body>
     <nav>
-        <a href="#" class="logo">IPCArt - Studio</a>
+        <a href="{% url 'Galeria' %}" class="logo">IPCArt - Studio</a>
         <div class="nav-links">
-            <a href="#">Galería</a>
-            <a href="#">Cargar imagen</a>
-            <a href="#">Editor de imágenes</a>
-            <a href="#">Ayuda</a>
-            <a href="#">Cerrar sesión</a>
+            <a href="/Galeria">Galería</a>
+            <a href="">Cargar imagen</a>
+            <a href="">Editor de imagenes</a>
+            <a href="">Ayuda</a>
+            <a href="/" onclick="cerrarSesion(); return false;">Cerrar sesión</a>
         </div>
     </nav>
+
+    <div class="main-content">
+        <h1>Bienvenido a la Galería</h1>
+        <!-- Aquí irá el contenido de la galería -->
+    </div>
+
+    <script>
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "{% url 'index' %}";
+        }
+    </script>
 </body>
 </html>
