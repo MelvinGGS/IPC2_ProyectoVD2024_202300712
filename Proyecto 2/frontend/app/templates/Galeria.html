@@ -104,22 +104,13 @@
 </head>
 <body>
     <nav>
-        <a href="#" class="logo">IPCArt - Studio</a>
+        <a href="{% url 'Galeria' %}" class="logo">IPCArt - Studio</a>
         <div class="nav-links">
-<<<<<<< Updated upstream:Proyecto 2/frontend/app/templates/user.html
-            <a href="#">Galería</a>
-            <a href="#">Cargar imagen</a>
-            <a href="#">Editor de imágenes</a>
-            <a href="#">Ayuda</a>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </nav>
-=======
             <a href="/Galeria">Galería</a>
             <a href="/CargarImagen">Cargar imagen</a>
             <a href="/EditarImagen">Editor de imagenes</a>
             <a href="/Ayuda">Ayuda</a>
-            <a href="/">Cerrar sesión</a>
+            <a href="/" onclick="cerrarSesion(); return false;">Cerrar sesión</a>
         </div>
     </nav>
 
@@ -127,7 +118,7 @@
         <div class="gallery-grid">
             <div class="image-card">
                 <div class="image-container">
-                    <img src="/placeholder.svg?height=200&width=300" alt="Figura 1">
+                    <img src="" alt="Figura 1">
                 </div>
                 <div class="image-info">
                     <p><span class="label">ID:</span> 1</p>
@@ -148,6 +139,12 @@
             </div>
         </div>
     </div>
->>>>>>> Stashed changes:Proyecto 2/frontend/app/templates/Galeria.html
+
+    <script>
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "{% url 'index' %}";
+        }
+    </script>
 </body>
 </html>

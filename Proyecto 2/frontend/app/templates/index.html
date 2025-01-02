@@ -78,9 +78,6 @@
 <body>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
-<<<<<<< Updated upstream
-        <form action="/login" method="POST">
-=======
         {% if messages %}
             {% for message in messages %}
                 <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
@@ -90,7 +87,6 @@
         {% endif %}
         <form method="POST">
             {% csrf_token %}
->>>>>>> Stashed changes
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input type="text" id="username" name="username" required>
