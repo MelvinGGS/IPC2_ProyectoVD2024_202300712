@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMINISTRADOR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        nav {
+            background: #fff;
+            padding: 15px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #333;
+        }
+
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .user-card {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-card .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .user-card .info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .user-card .info p {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'CargarUsuarios' %}" class="logo">IPCArt - Studio</a>
+        <div class="nav-links">
+            <a href="/CargarUsuarios">Carga masiva</a>
+            <a href="/VerUsuarios">Ver usuarios</a>
+            <a href="/VerXML">Ver XML</a>
+            <a href="">Ver estadisticas</a>
+            <a href="/">Cerrar sesión</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <section class="user-cards">
+            {% if users %}
+                {% for user in users %}
+                <div class="user-card">
+                    <img src="{{ user.perfil }}" alt="Foto de {{ user.nombre }}" onerror="this.src='https://via.placeholder.com/80'">
+                    <div class="info">
+                        <h3>{{ user.nombre }}</h3>
+                        <p><strong>ID:</strong> {{ user.id }}</p>
+                        <p><strong>Correo:</strong> {{ user.correo }}</p>
+                        <p><strong>Teléfono:</strong> {{ user.telefono }}</p>
+                        <p><strong>Dirección:</strong> {{ user.direccion }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="grid-column: 1/-1; text-align: center;">
+                    <p>No hay usuarios cargados</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

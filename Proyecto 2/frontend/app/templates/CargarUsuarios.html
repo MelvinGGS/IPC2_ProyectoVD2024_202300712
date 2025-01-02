@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMINISTRADOR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        nav {
+            background: #fff;
+            padding: 15px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #333;
+        }
+
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .text-area {
+            width: 80%;
+            height: 600px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .buttons button {
+            padding: 25px 50px;
+            font-size: 22px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .file-input {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .file-input input[type="file"] {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'CargarUsuarios' %}" class="logo">IPCArt - Studio</a>
+        <div class="nav-links">
+            <a href="/CargarUsuarios">Carga masiva</a>
+            <a href="/VerUsuarios">Ver usuarios</a>
+            <a href="/VerXML">Ver XML</a>
+            <a href="">Ver estadisticas</a>
+            <a href="{% url 'index' %}">Cerrar sesión</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="file-input buttons">
+                <input type="file" name="file" accept=".xml" required>
+                <button type="submit">Cargar archivo</button>
+            </div>
+        </form>
+        
+        <pre class="text-area">{{ xml_content }}</pre>
+    </div>
+</body>
+</html>
