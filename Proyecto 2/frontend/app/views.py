@@ -43,16 +43,29 @@ def index(request):
     return render(request, 'index.html')
 
 def CargarUsuarios(request):
-    if request.method == 'POST' and request.FILES.get('file'):
-        files = {'file': request.FILES['file']}
-        response = requests.post('http://localhost:5000/upload', files=files)
-        
-        if response.status_code == 200:
-            messages.success(request, 'Archivo cargado exitosamente')
-            xml_content = response.json().get('content', '')
-            return render(request, 'CargarUsuarios.html', {'xml_content': xml_content})
-        else:
-            messages.error(request, 'Error al cargar el archivo')
+    if request.method == 'POST':
+        if 'file' not in request.FILES:
+            messages.error(request, 'No se seleccionó ningún archivo')
+            return render(request, 'CargarUsuarios.html')
+            
+        file = request.FILES['file']
+        if not file.name:
+            messages.error(request, 'El archivo está vacío')
+            return render(request, 'CargarUsuarios.html')
+            
+        files = {'file': (file.name, file, 'text/xml')}
+        try:
+            response = requests.post('http://localhost:5000/upload', files=files)
+            
+            if response.status_code == 200:
+                messages.success(request, 'Archivo cargado exitosamente')
+                xml_content = response.json().get('content', '')
+                return render(request, 'CargarUsuarios.html', {'xml_content': xml_content})
+            else:
+                error_msg = response.json().get('message', 'Error desconocido al cargar el archivo')
+                messages.error(request, error_msg)
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f'Error de conexión: {str(e)}')
     
     # Get XML content for display
     response = requests.get('http://localhost:5000/view-xml')

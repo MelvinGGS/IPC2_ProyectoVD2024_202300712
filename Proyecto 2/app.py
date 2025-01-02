@@ -121,70 +121,84 @@ def login():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"status": "error", "message": "No file part"}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"status": "error", "message": "No selected file"}), 400
-    
-    if file and file.filename.endswith('.xml'):
-        try:
-            temp_path = 'temp_upload.xml'
-            file.save(temp_path)
-            tree = ET.parse(temp_path)
-            root = tree.getroot()
+    try:
+        if 'file' not in request.files:
+            print("No file part in request")
+            return jsonify({
+                "status": "error", 
+                "message": "No se seleccionó ningún archivo"
+            }), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            print("Empty filename")
+            return jsonify({
+                "status": "error", 
+                "message": "Nombre de archivo vacío"
+            }), 400
             
-            valid_users = []
-            ids_vistos = set()
-            invalid_count = 0
-            
-            for solicitante in root.findall('solicitante'):
-                try:
-                    id_usuario = solicitante.get('id')
-                    correo = solicitante.find('CorreoElectronico').text
-                    telefono = solicitante.find('NumeroTelefono').text
-                    
-                    if not validar_id(id_usuario) or \
-                       not validar_correo(correo) or \
-                       not validar_telefono(telefono) or \
-                       id_usuario in ids_vistos:
-                        invalid_count += 1
-                        continue
-                    
-                    ids_vistos.add(id_usuario)
-                    valid_users.append(solicitante)
-                    
-                except Exception as e:
-                    print(f"Error procesando usuario: {e}")
+        if not file.filename.endswith('.xml'):
+            print("Invalid file type")
+            return jsonify({
+                "status": "error", 
+                "message": "El archivo debe ser XML"
+            }), 400
+
+        temp_path = 'temp_upload.xml'
+        file.save(temp_path)
+        tree = ET.parse(temp_path)
+        root = tree.getroot()
+        
+        valid_users = []
+        ids_vistos = set()
+        invalid_count = 0
+        
+        for solicitante in root.findall('solicitante'):
+            try:
+                id_usuario = solicitante.get('id')
+                correo = solicitante.find('CorreoElectronico').text
+                telefono = solicitante.find('NumeroTelefono').text
+                
+                if not validar_id(id_usuario) or \
+                   not validar_correo(correo) or \
+                   not validar_telefono(telefono) or \
+                   id_usuario in ids_vistos:
                     invalid_count += 1
                     continue
-            
-            new_root = ET.Element("solicitantes")
-            for user in valid_users:
-                new_root.append(user)
-            
-            tree = ET.ElementTree(new_root)
-            tree.write(UPLOADED_XML, encoding='utf-8', xml_declaration=True)
-            
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-            
-            message = f"Archivo cargado. Usuarios válidos: {len(valid_users)}, Usuarios inválidos: {invalid_count}"
-            print(message)
-            
-            return jsonify({
-                "status": "success",
-                "message": message,
-                "content": ET.tostring(new_root, encoding='unicode', method='xml')
-            })
-            
-        except Exception as e:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-            return jsonify({"status": "error", "message": str(e)}), 400
-    
-    return jsonify({"status": "error", "message": "Invalid file type"}), 400
+                
+                ids_vistos.add(id_usuario)
+                valid_users.append(solicitante)
+                
+            except Exception as e:
+                print(f"Error procesando usuario: {e}")
+                invalid_count += 1
+                continue
+        
+        new_root = ET.Element("solicitantes")
+        for user in valid_users:
+            new_root.append(user)
+        
+        tree = ET.ElementTree(new_root)
+        tree.write(UPLOADED_XML, encoding='utf-8', xml_declaration=True)
+        
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        
+        message = f"Archivo cargado. Usuarios válidos: {len(valid_users)}, Usuarios inválidos: {invalid_count}"
+        print(message)
+        
+        return jsonify({
+            "status": "success",
+            "message": message,
+            "content": ET.tostring(new_root, encoding='unicode', method='xml')
+        })
+        
+    except Exception as e:
+        print(f"Upload error: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": f"Error al procesar archivo: {str(e)}"
+        }), 500
 
 @app.route('/view-xml', methods=['GET'])
 def view_xml():
