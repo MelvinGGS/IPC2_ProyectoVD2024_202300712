@@ -32,4 +32,6 @@ GET http://localhost:5000/api/get-users
 
 - CARGAR USUARIOS
 POST http://localhost:5000/upload
+
+py manage.py runserver
 '''
